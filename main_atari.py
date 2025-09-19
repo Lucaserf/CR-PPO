@@ -1,12 +1,11 @@
 import torch as th
 from stable_baselines3 import PPO
-from stable_baselines3.common.env_util import make_vec_env, make_atari_env
+from stable_baselines3.common.env_util import make_atari_env
 from stable_baselines3.common.logger import configure
 from stable_baselines3.common.vec_env import VecFrameStack
 # from stable_baselines3.common.atari_wrappers import AtariWrapper
 from CDPO import CDPO
 import argparse
-
 
 parser = argparse.ArgumentParser(description='CDPO')
 parser.add_argument('--env', type=str, default='Pendulum-v1', help='Environment name')
