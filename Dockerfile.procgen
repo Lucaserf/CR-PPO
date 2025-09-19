@@ -1,0 +1,22 @@
+FROM nvcr.io/nvidia/tensorflow:23.03-tf1-py3
+
+RUN apt-get update && apt-get install && apt-get install --yes --no-install-recommends python3-pip python3-setuptools libglib2.0-0
+
+RUN apt-get install -y git && rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install --upgrade pip
+RUN pip3 install --no-cache-dir mpi4py==3.0.3 gym==0.15.4 procgen==0.10.4 wandb cmake pytest
+
+#RUN git clone https://github.com/openai/baselines.git /app
+
+#WORKDIR /app
+
+#RUN git checkout master
+
+#RUN pip3 install -e .
+
+RUN pip3 install https://github.com/openai/baselines/archive/9ee399f5b20cd70ac0a871927a6cf043b478193f.zip
+
+RUN python3 -c 'from procgen import ProcgenEnv; env = ProcgenEnv(num_envs=1, env_name="coinrun")'
+
+CMD ["/bin/bash"]
