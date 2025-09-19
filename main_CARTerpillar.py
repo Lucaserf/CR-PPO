@@ -49,7 +49,7 @@ def make_cartpole_env():
 
 env = make_vec_env(make_cartpole_env, n_envs=8, seed=args.seed)
 
-env_name = f"CARTerpillarEnv{args.gravity}_{args.n_dimensions}"
+env_name = f"CARTerpillar{args.gravity}_{args.n_dimensions}"
 
 entropy_string = args.entropy_value
 entropy_value = float(args.entropy_value)
