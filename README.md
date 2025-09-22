@@ -12,6 +12,32 @@ This repo contains an implementation of CDPO based on `stable-baselines3` and `p
 
 ### Gym environments
 
+To run the experiments on gym environments, you can set up a virtual environment with Python >=3.10 and install the required packages by executing:
+
+```
+python -m pip install -r requirements_stablebaselines.txt
+```
+
+Then, you can launch the training with:
+
+```
+python3 main_gymnasium.py --env <env_name> --entropy_value <entropy_value> --seed <seed> --timesteps <timesteps> --policy <policy> --lr <learning_rate> --clip_range <clip_range> --epochs <epochs> --n_steps <n_steps> --gamma <gamma> --gae_lambda <gae_lambda> --batch_size <batch_size>
+```
+
+For example, to train a CDPO agent on `CartPole-v1` you can run:
+
+```
+python3 main_gymnasium.py --env CartPole-v1 --entropy_value 1e-1 --seed 0 --timesteps 1000000 --policy MlpPolicy --lr 2.5e-4 --clip_range 0.1 --epochs 4 --n_steps 128 --gamma 0.99 --gae_lambda 0.95 --batch_size 256
+```
+
+To train on an Atari environment like `BreakoutNoFrameskip-v4`:
+
+```
+python3 main_gymnasium.py --env BreakoutNoFrameskip-v4 --policy CnnPolicy --entropy_value 1e-2 --seed 0 --timesteps 1000000 --lr 2.5e-4 --clip_range 0.1 --epochs 4 --n_steps 128 --gamma 0.99 --gae_lambda 0.95 --batch_size 256
+```
+
+You can play with the `--entropy_value` parameter, which corresponds to the scaling factor for either entropy or complexity regularization. To switch from CDPO to PPO, just pass the argument `--only_entropy`.
+
 ### CoinRun environment
 
 To train a CDPO agent on CoinRun, you can use the Dockerfile `Dockerfile.procgen` to build a Docker container in which running the code. Alternatively, you can set up a virtual environment with Python >=3.6,<=3.8 by executing:
@@ -37,3 +63,23 @@ mpiexec -np 2 python3 main_procgen.py --env_name coinrun --num_envs 256 --distri
 ```
 
 ### CARTerpillar enironment
+
+To run the experiments on the CARTerpillar environment, you can set up a virtual environment with Python >=3.10 and install the required packages by executing:
+
+```
+python -m pip install -r requirements_stablebaselines.txt
+```
+
+Then, you can launch the training with:
+
+```
+python3 main_CARTerpillar.py --n_carts <n_carts> --gravity <gravity> --entropy_value <entropy_value> --seed <seed> --timesteps <timesteps> --policy <policy> --lr <learning_rate> --clip_range <clip_range> --epochs <epochs> --n_steps <n_steps> --gamma <gamma> --gae_lambda <gae_lambda> --batch_size <batch_size>
+```
+
+For example, to train a CDPO agent on `CARTerpillar` with 2 poles and default gravity you can run:
+
+```
+python3 main_CARTerpillar.py --n_carts 2 --entropy_value 1e-1 --seed 0 --timesteps 100000
+```
+
+You can play with the `--entropy_value` parameter, which corresponds to the scaling factor for either entropy or complexity regularization. To switch from CDPO to PPO, just pass the argument `--only_entropy`. The `--n_carts` and `--gravity` arguments allow you to change the difficulty of the environment.

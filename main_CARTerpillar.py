@@ -34,8 +34,9 @@ parser.add_argument("--epochs", type=int, default=20, help='PPO epochs')
 parser.add_argument("--n_steps", type=int, default=32, help='Number of steps between updates')
 parser.add_argument('--gamma', type=float, default=0.98, help='Gamma for advantage computation')
 parser.add_argument('--gae_lambda', type=float, default=0.8, help='Lambda for GAE')
-parser.add_argument("--n_dimensions", type=int, default=1, help='Number of dimensions for NCartpole environment')
+parser.add_argument("--n_carts", type=int, default=1, help='Number of carts for NCartpole environment')
 parser.add_argument("--gravity", type=float, default=9.8, help='Gravity for NCartpole environment')
+parser.add_argument("--batch_size", type=int, default=256, help='Batch size for PPO')
 
 args = parser.parse_args()
 
@@ -43,13 +44,13 @@ env_name = args.env
 
 
 def make_cartpole_env():
-    env = CARTerpillarEnv(n_poles=args.n_dimensions, gravity=args.gravity)
+    env = CARTerpillarEnv(n_poles=args.n_carts, gravity=args.gravity)
     env = TimeLimit(env, max_episode_steps=500)
     return env
 
 env = make_vec_env(make_cartpole_env, n_envs=8, seed=args.seed)
 
-env_name = f"CARTerpillar{args.gravity}_{args.n_dimensions}"
+env_name = f"CARTerpillar{args.gravity}_{args.n_carts}"
 
 entropy_string = args.entropy_value
 entropy_value = float(args.entropy_value)
@@ -69,9 +70,9 @@ new_logger = configure(log_name, ["csv", "tensorboard"])
 
 # Instantiate the model
 if args.only_entropy:
-    model = PPO(args.policy, env, verbose=1, seed=args.seed, ent_coef=entropy_value, n_steps=args.n_steps, n_epochs=args.epochs, batch_size=256, learning_rate=args.lr, clip_range=args.clip_range,  gamma=args.gamma, gae_lambda=args.gae_lambda)
+    model = PPO(args.policy, env, verbose=1, seed=args.seed, ent_coef=entropy_value, n_steps=args.n_steps, n_epochs=args.epochs, batch_size=args.batch_size, learning_rate=args.lr, clip_range=args.clip_range,  gamma=args.gamma, gae_lambda=args.gae_lambda)
 else:
-    model = CDPO(args.policy, env, verbose=1, seed=args.seed, ent_coef=entropy_value, n_steps=args.n_steps, n_epochs=args.epochs, batch_size=256, learning_rate=args.lr, clip_range=args.clip_range,  gamma=args.gamma, gae_lambda=args.gae_lambda)
+    model = CDPO(args.policy, env, verbose=1, seed=args.seed, ent_coef=entropy_value, n_steps=args.n_steps, n_epochs=args.epochs, batch_size=args.batch_size, learning_rate=args.lr, clip_range=args.clip_range,  gamma=args.gamma, gae_lambda=args.gae_lambda)
 
 model.set_logger(new_logger)
 
