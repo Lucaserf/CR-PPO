@@ -1,6 +1,6 @@
 import torch as th
 from stable_baselines3 import PPO
-from stable_baselines3.common.env_util import make_atari_env
+from stable_baselines3.common.env_util import make_atari_env, make_vec_env
 from stable_baselines3.common.logger import configure
 from stable_baselines3.common.vec_env import VecFrameStack
 # from stable_baselines3.common.atari_wrappers import AtariWrapper
@@ -20,32 +20,18 @@ parser.add_argument("--epochs", type=int, default=4, help='PPO epochs')
 parser.add_argument("--n_steps", type=int, default=128, help='Number of steps between updates')
 parser.add_argument('--gamma', type=float, default=0.99, help='Gamma for advantage computation')
 parser.add_argument('--gae_lambda', type=float, default=0.95, help='Lambda for GAE')
+parser.add_argument("--batch_size", type=int, default=256, help='Batch size for PPO')
 # parser.add_argument("--env_kwargs", type=dict,default={})
 args = parser.parse_args()
 
 env_name = args.env
-# env_kwargs = {'continuous': False} if 'CarRacing' in env_name else {}
-# env = make_vec_env(env_name, n_envs=1, seed=args.seed, env_kwargs=env_kwargs)
 
-#hyperparameters
-# atari:
-#   env_wrapper:
-#     - stable_baselines3.common.atari_wrappers.AtariWrapper
-#   frame_stack: 4
-#   policy: 'CnnPolicy'
-#   n_envs: 8
-#   n_steps: 128
-#   n_epochs: 4
-#   batch_size: 256
-#   n_timesteps: !!float 1e7
-#   learning_rate: lin_2.5e-4
-#   clip_range: lin_0.1
-#   vf_coef: 0.5
-#   ent_coef: 0.01
-
-
-env = make_atari_env(env_name, n_envs=8, seed=args.seed)
-env = VecFrameStack(env, n_stack=4)
+if env_name in ["CarRacing-v2", "CartPole-v1"]:
+    env_kwargs = {'continuous': False} if 'CarRacing' in env_name else {}
+    env = make_vec_env(env_name, n_envs=1, seed=args.seed, env_kwargs=env_kwargs)
+else:
+    env = make_atari_env(env_name, n_envs=8, seed=args.seed)
+    env = VecFrameStack(env, n_stack=4)
 
 entropy_string = args.entropy_value
 entropy_value = float(args.entropy_value)
@@ -66,9 +52,9 @@ new_logger = configure(log_name, ["csv", "tensorboard"])
 # Instantiate the model
 
 if args.only_entropy:
-    model = PPO(args.policy, env, verbose=1, seed=args.seed, ent_coef=entropy_value, n_steps=args.n_steps, n_epochs=args.epochs, batch_size=256, learning_rate=args.lr, clip_range=args.clip_range, vf_coef=0.5, gamma=args.gamma, gae_lambda=args.gae_lambda)
+    model = PPO(args.policy, env, verbose=1, seed=args.seed, ent_coef=entropy_value, n_steps=args.n_steps, n_epochs=args.epochs, batch_size=args.batch_size, learning_rate=args.lr, clip_range=args.clip_range, vf_coef=0.5, gamma=args.gamma, gae_lambda=args.gae_lambda)
 else:
-    model = CDPO(args.policy, env, verbose=1, seed=args.seed, ent_coef=entropy_value, n_steps=args.n_steps, n_epochs=args.epochs, batch_size=256, learning_rate=args.lr, clip_range=args.clip_range, vf_coef=0.5, gamma=args.gamma, gae_lambda=args.gae_lambda)
+    model = CDPO(args.policy, env, verbose=1, seed=args.seed, ent_coef=entropy_value, n_steps=args.n_steps, n_epochs=args.epochs, batch_size=args.batch_size, learning_rate=args.lr, clip_range=args.clip_range, vf_coef=0.5, gamma=args.gamma, gae_lambda=args.gae_lambda)
 
 
 model.set_logger(new_logger)
