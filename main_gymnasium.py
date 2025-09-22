@@ -4,11 +4,11 @@ from stable_baselines3.common.env_util import make_atari_env, make_vec_env
 from stable_baselines3.common.logger import configure
 from stable_baselines3.common.vec_env import VecFrameStack
 # from stable_baselines3.common.atari_wrappers import AtariWrapper
-from CDPO import CDPO
+from cdpo_stablebaselines.CDPO import CDPO
 import argparse
 
 parser = argparse.ArgumentParser(description='CDPO')
-parser.add_argument('--env', type=str, default='Pendulum-v1', help='Environment name')
+parser.add_argument('--env', type=str, default='CartPole-v1', help='Environment name')
 parser.add_argument('--seed', type=int, default=0, help='Seed')
 parser.add_argument('--entropy_value', type=str, default='1e-1', help='Entropy value')
 parser.add_argument('--only_entropy', action="store_true", help='Only entropy')

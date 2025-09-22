@@ -4,9 +4,9 @@ from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.logger import configure
 from gymnasium.wrappers import TimeLimit
 # from stable_baselines3.common.atari_wrappers import AtariWrapper
-from CDPO import CDPO
+from cdpo_stablebaselines.CDPO import CDPO
 import argparse
-from CARTerpillar import CARTerpillarEnv
+from CARTerpillar.CARTerpillar import CARTerpillarEnv
 
 # CartPole-v1:
 #   n_envs: 8

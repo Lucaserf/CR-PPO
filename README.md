@@ -27,14 +27,15 @@ python3 main_gymnasium.py --env <env_name> --entropy_value <entropy_value> --see
 For example, to train a CDPO agent on `CartPole-v1` you can run:
 
 ```
-python3 main_gymnasium.py --env CartPole-v1 --entropy_value 1e-1 --seed 0 --timesteps 1000000 --policy MlpPolicy --lr 2.5e-4 --clip_range 0.1 --epochs 4 --n_steps 128 --gamma 0.99 --gae_lambda 0.95 --batch_size 256
+python3 main_gymnasium.py --env CartPole-v1 --entropy_value 1e-1 --seed 0 --timesteps 1000000 --policy MlpPolicy --lr 2.5e-4 --clip_range 0.1 --epochs 4 --n_steps 128 --gamma 0.99 --gae_lambda 0.95 --batch_size 128
 ```
 
-To train on an Atari environment like `BreakoutNoFrameskip-v4`:
+To train on an Atari environment like `AirRaidNoFrameskip-v4`:
 
 ```
-python3 main_gymnasium.py --env BreakoutNoFrameskip-v4 --policy CnnPolicy --entropy_value 1e-2 --seed 0 --timesteps 1000000 --lr 2.5e-4 --clip_range 0.1 --epochs 4 --n_steps 128 --gamma 0.99 --gae_lambda 0.95 --batch_size 256
+python3 main_gymnasium.py --env AirRaidNoFrameskip-v4 --policy CnnPolicy --entropy_value 1e-2 --seed 0 --timesteps 1000000 --lr 2.5e-4 --clip_range 0.1 --epochs 4 --n_steps 128 --gamma 0.99 --gae_lambda 0.95 --batch_size 256
 ```
+
 
 You can play with the `--entropy_value` parameter, which corresponds to the scaling factor for either entropy or complexity regularization. To switch from CDPO to PPO, just pass the argument `--only_entropy`.
 
