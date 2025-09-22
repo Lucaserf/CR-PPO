@@ -289,7 +289,7 @@ width = 0.25
 # Create bars
 bars1 = ax.bar(x - width, plot_data['baseline'], width, 
                yerr=plot_data['baseline_sem'], capsize=5,
-               label='PPO', alpha=0.8, color=colors[-1])
+               label='PPOwoEnt', alpha=0.8, color=colors[-1])
 
 bars2 = ax.bar(x , plot_data['entropy'], width,
                yerr=plot_data['entropy_sem'], capsize=5,
