@@ -2,11 +2,13 @@
 
 ## In Summary
 
-A brief summary of the method.
+Several policy gradient methods, such as Proximal Policy Optimization (PPO), often include entropy regularization. This can help with exploration by encouraging stochastic policies and preventing deterministic behavior, and in certain scenarios, it can also facilitate the optimization process. However, especially for PPO, its real utility is disputed, and finding the correct scaling factor for the entropy loss is not trivial; in addition, maximizing entropy pushes the policy towards a uniform random distribution regardless of the current nature of the policy and the actual need for exploration, which might result in a less efficient learning strategy.
+
+In this work, we propose to replace entropy with a new regularization term based on complexity, defined as the product of Shannon entropy and disequilibrium. More specifically, we define Complexity-Driven Policy Optimization (CDPO), a new learning algorithm based on PPO that replaces its entropy bonus with our complexity term. By scaling the policy entropy with its disequilibrium, CDPO is capable of promoting divergence when the policy becomes too deterministic, while also promoting convergence when the policy is too random.
 
 ## Execution Instruction
 
-This repo contains an implementation of CDPO based on `stable-baselines3` and `pytorch`, as well as one based on `baselines` and `tensorflow` 1.x, and all the code necessary to reproduce the results reported in the paper.
+This repo contains an implementation of CDPO based on `stable-baselines3` and `pytorch`, as well as one based on `baselines` and `tensorflow` 1.x, and all the code necessary to reproduce the results reported in the paper. In particular, the experiments concerned three types of environments: classic and Atari gym environments; one ProcGen environment, i.e., CoinRun; and a brand new environment, namely CARTerpillar, which extends CartPole to multiple carts and provides a simple and scalable way to evaluate agents under different levels of difficulty. Below you can find the instructions to repeat all our experiments.
 
 ### Gym environments
 
