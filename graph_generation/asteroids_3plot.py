@@ -184,7 +184,7 @@ def create_three_subplot_figure():
     
     # First two plots: individual entropy coefficients
     plot_configs = [
-        ("complexity", ax1, "CRPPO"),
+        ("complexity", ax1, "CR-PPO"),
         ("entropy", ax2, "PPOwEnt")
     ]
     
@@ -317,7 +317,7 @@ def create_three_subplot_figure():
         
         comparison_lines.append(line)
         if plot_type_to_aggregate == "complexity":
-            comparison_labels.append(r"CRPPO (Avg)")
+            comparison_labels.append(r"CR-PPO (Avg)")
         else:
             comparison_labels.append(r"PPOwEnt (Avg)")
 
