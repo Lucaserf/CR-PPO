@@ -14,7 +14,7 @@ from baselines.common.vec_env import (
 from baselines import logger
 from mpi4py import MPI
 import argparse
-from cdpo_baselines import CDPO
+from crppo_baselines import CRPPO
 
 
 def train_fn(env_name, num_envs, distribution_mode, num_levels, start_level, timesteps_per_proc, is_test_worker=False,
@@ -84,7 +84,7 @@ def train_fn(env_name, num_envs, distribution_mode, num_levels, start_level, tim
             max_grad_norm=0.5,
         )
     else:
-        CDPO.learn(
+        CRPPO.learn(
             env=venv,
             network=conv_fn,
             total_timesteps=timesteps_per_proc,
@@ -143,7 +143,7 @@ def main():
              args.start_level,
              args.timesteps_per_proc,
              is_test_worker=is_test_worker,
-             log_dir='/CDPO/logs/' + args.env_name + '_' + str(args.start_level) + '_' + args.entropy_value + '_' + ent_type + '/',
+             log_dir='/CRPPO/logs/' + args.env_name + '_' + str(args.start_level) + '_' + args.entropy_value + '_' + ent_type + '/',
              comm=comm,
              ent_coef=float(args.entropy_value),
              only_entropy=args.only_entropy)

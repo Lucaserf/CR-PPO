@@ -203,7 +203,7 @@ for env_idx, environment in enumerate(environments):
         if env_idx == 0:
             legend_handles.append(line)
             if plot_type_to_aggregate == "complexity":
-                legend_labels.append(r"CDPO (Avg $c_2$)")
+                legend_labels.append(r"CRPPO (Avg $c_2$)")
             else:
                 legend_labels.append(r"PPOwEnt (Avg $c_2$)")
         

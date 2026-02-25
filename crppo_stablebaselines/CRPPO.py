@@ -12,16 +12,16 @@ from stable_baselines3.common.policies import ActorCriticCnnPolicy, ActorCriticP
 from stable_baselines3.common.type_aliases import GymEnv, MaybeCallback, Schedule
 from stable_baselines3.common.utils import explained_variance, get_schedule_fn
 
-SelfCDPO = TypeVar("SelfCDPO", bound="CDPO")
+SelfCRPPO = TypeVar("SelfCRPPO", bound="CRPPO")
 
 
-class CDPO(OnPolicyAlgorithm):
+class CRPPO(OnPolicyAlgorithm):
     """
-    Complexity-Driven Proximal Policy Optimization algorithm (CDPO) 
+    Complexity-Driven Proximal Policy Optimization algorithm (CRPPO) 
 
     Paper: https://arxiv.org/abs/1707.06347
     Code: This implementation borrows code from OpenAI Spinning Up (https://github.com/openai/spinningup/)
-    https://github.com/ikostrikov/pytorch-a2c-CDPO-acktr-gail and
+    https://github.com/ikostrikov/pytorch-a2c-CRPPO-acktr-gail and
     Stable Baselines (PPO2 from https://github.com/hill-a/stable-baselines)
 
     Introduction to PPO: https://spinningup.openai.com/en/latest/algorithms/PPO.html
@@ -326,14 +326,14 @@ class CDPO(OnPolicyAlgorithm):
             self.logger.record("train/clip_range_vf", clip_range_vf)
 
     def learn(
-        self: SelfCDPO,
+        self: SelfCRPPO,
         total_timesteps: int,
         callback: MaybeCallback = None,
         log_interval: int = 1,
-        tb_log_name: str = "CDPO",
+        tb_log_name: str = "CRPPO",
         reset_num_timesteps: bool = True,
         progress_bar: bool = False,
-    ) -> SelfCDPO:
+    ) -> SelfCRPPO:
         return super().learn(
             total_timesteps=total_timesteps,
             callback=callback,

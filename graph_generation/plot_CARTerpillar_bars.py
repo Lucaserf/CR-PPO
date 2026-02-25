@@ -298,7 +298,7 @@ bars2 = ax.bar(x , plot_data['entropy'], width,
 
 bars3 = ax.bar(x + width, plot_data['complexity'], width,
                yerr=plot_data['complexity_sem'], capsize=5,
-               label='CDPO', alpha=0.8, color=colors[3])
+               label='CRPPO', alpha=0.8, color=colors[3])
 
 
 # Customize the plot

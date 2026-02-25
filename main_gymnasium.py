@@ -4,10 +4,10 @@ from stable_baselines3.common.env_util import make_atari_env, make_vec_env
 from stable_baselines3.common.logger import configure
 from stable_baselines3.common.vec_env import VecFrameStack
 # from stable_baselines3.common.atari_wrappers import AtariWrapper
-from cdpo_stablebaselines.CDPO import CDPO
+from crppo_stablebaselines.CRPPO import CRPPO
 import argparse
 
-parser = argparse.ArgumentParser(description='CDPO')
+parser = argparse.ArgumentParser(description='CRPPO')
 parser.add_argument('--env', type=str, default='CartPole-v1', help='Environment name')
 parser.add_argument('--seed', type=int, default=0, help='Seed')
 parser.add_argument('--entropy_value', type=str, default='1e-1', help='Entropy value')
@@ -54,7 +54,7 @@ new_logger = configure(log_name, ["csv", "tensorboard"])
 if args.only_entropy:
     model = PPO(args.policy, env, verbose=1, seed=args.seed, ent_coef=entropy_value, n_steps=args.n_steps, n_epochs=args.epochs, batch_size=args.batch_size, learning_rate=args.lr, clip_range=args.clip_range, vf_coef=0.5, gamma=args.gamma, gae_lambda=args.gae_lambda)
 else:
-    model = CDPO(args.policy, env, verbose=1, seed=args.seed, ent_coef=entropy_value, n_steps=args.n_steps, n_epochs=args.epochs, batch_size=args.batch_size, learning_rate=args.lr, clip_range=args.clip_range, vf_coef=0.5, gamma=args.gamma, gae_lambda=args.gae_lambda)
+    model = CRPPO(args.policy, env, verbose=1, seed=args.seed, ent_coef=entropy_value, n_steps=args.n_steps, n_epochs=args.epochs, batch_size=args.batch_size, learning_rate=args.lr, clip_range=args.clip_range, vf_coef=0.5, gamma=args.gamma, gae_lambda=args.gae_lambda)
 
 
 model.set_logger(new_logger)
