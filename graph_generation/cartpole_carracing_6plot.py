@@ -58,6 +58,7 @@ ENV_CONFIGS = {
         "progress_file": "progress.csv",
         "reward_column": "rollout/ep_rew_mean",
         "row_label": "CartPole-v1",
+        "title": "CartPole",
     },
     "carracing": {
         "environment": "CarRacing-v2",
@@ -70,6 +71,7 @@ ENV_CONFIGS = {
         "progress_file": "progress.csv",
         "reward_column": "rollout/ep_rew_mean",
         "row_label": "CarRacing-v2",
+        "title": "CarRacing",
     },
 }
 
@@ -363,6 +365,10 @@ def plot_row(fig, axes, env_key, config, is_top_row):
     ax3.set_ylim(*config["ylim"])
     ax3.set_xticks(config["xticks"])
     ax3.set_yticklabels([])  # Remove Y-axis labels
+
+    # Add environment name as rotated text on the right side of the row
+    ax3.text(1.05, 0.5, config["title"], rotation=-90,
+             ha='left', va='center', transform=ax3.transAxes, fontsize=18)
 
     return all_lines, all_labels, comparison_lines, comparison_labels
 
