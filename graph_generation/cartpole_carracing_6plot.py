@@ -368,7 +368,7 @@ def plot_row(fig, axes, env_key, config, is_top_row):
 
     # Add environment name as rotated text on the right side of the row
     ax3.text(1.05, 0.5, config["title"], rotation=-90,
-             ha='left', va='center', transform=ax3.transAxes, fontsize=18)
+             ha='left', va='center', transform=ax3.transAxes)
 
     return all_lines, all_labels, comparison_lines, comparison_labels
 
