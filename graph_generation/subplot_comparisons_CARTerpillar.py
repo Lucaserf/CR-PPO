@@ -233,8 +233,8 @@ for i in range(len(environments), len(axes)):
 if legend_handles:
     legend = fig.legend(legend_handles, legend_labels, loc='upper center', bbox_to_anchor=(0.5, 1.03), ncol=2)
 
-for line in legend.get_lines():
-    line.set_linewidth(4) 
+    for line in legend.get_lines():
+        line.set_linewidth(4) 
 # --- Final Plot Configuration ---
 plt.tight_layout()
 plt.subplots_adjust(top=0.9)  # Make room for the legend
