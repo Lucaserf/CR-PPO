@@ -1,4 +1,4 @@
-# CR-PPO - Curiosity-Driven Policy Optimization
+# CR-PPO - Complexity-Regularized Proximal Policy Optimization
 
 ## In Summary
 
