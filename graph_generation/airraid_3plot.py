@@ -306,6 +306,16 @@ def create_three_subplot_figure():
 
         # Plot aggregated line
         x_values = np.arange(common_min_len_for_plot_type) * 1024  # Timestep multiplier for AirRaid
+
+        # Downsample if data exceeds max_points threshold
+        if MAX_PLOT_POINTS is not None and len(x_values) > MAX_PLOT_POINTS:
+            step = len(x_values) // MAX_PLOT_POINTS
+            if step > 1:
+                indices = np.arange(0, len(x_values), step)
+                x_values = x_values[indices]
+                final_mean_across_coeffs = final_mean_across_coeffs[indices]
+                final_sem_across_coeffs = final_sem_across_coeffs[indices]
+
         line, = ax3.plot(x_values, final_mean_across_coeffs, 
                         label=f"{plot_type_to_aggregate}", 
                         color=comparison_palette[plot_type_to_aggregate])
