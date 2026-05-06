@@ -1,8 +1,37 @@
 import torch as th
+import numpy as np
+import gymnasium as gym
+from gymnasium.spaces import Box, Discrete
+import sys
+sys.modules['gym'] = gym
 from stable_baselines3 import PPO
 from stable_baselines3.common.env_util import make_atari_env, make_vec_env
 from stable_baselines3.common.logger import configure
 from stable_baselines3.common.vec_env import VecFrameStack
+import crafter
+
+class CrafterGymnasiumEnv(gym.Env):
+    def __init__(self, reward=True, seed=None):
+        self.reward = reward
+        self.env = crafter.Env(reward=reward, seed=seed)
+        
+        self.observation_space = Box(low=0, high=255, shape=(64, 64, 3), dtype=np.uint8)
+        self.action_space = Discrete(17)
+
+    def reset(self, seed=None, options=None):
+        super().reset(seed=seed)
+        if seed is not None:
+            self.env = crafter.Env(reward=self.reward, seed=seed)
+        obs = self.env.reset()
+        return obs, {}
+
+    def step(self, action):
+        obs, reward, done, info = self.env.step(action)
+        return obs, reward, done, False, info
+
+def make_crafter_env():
+    return CrafterGymnasiumEnv(reward=True)
+
 # from stable_baselines3.common.atari_wrappers import AtariWrapper
 from crppo_stablebaselines.CRPPO import CRPPO
 import argparse
@@ -29,6 +58,9 @@ env_name = args.env
 if env_name in ["CarRacing-v2", "CartPole-v1"]:
     env_kwargs = {'continuous': False} if 'CarRacing' in env_name else {}
     env = make_vec_env(env_name, n_envs=1, seed=args.seed, env_kwargs=env_kwargs)
+elif env_name in ["CrafterReward-v1"]:
+    env = make_vec_env(make_crafter_env, n_envs=8, seed=args.seed)
+    env = VecFrameStack(env, n_stack=4)
 else:
     env = make_atari_env(env_name, n_envs=8, seed=args.seed)
     env = VecFrameStack(env, n_stack=4)
