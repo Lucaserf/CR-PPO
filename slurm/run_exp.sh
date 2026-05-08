@@ -6,8 +6,8 @@
 #SBATCH --mem=32G
 #SBATCH --partition=l40s
 #SBATCH --gres=gpu:1
-#SBATCH --output=./slurm_files/%N_%j.log
-#SBATCH -e ./slurm_files/slurm.%N.%j.err
+#SBATCH --output=./slurm/%N_%j.log
+#SBATCH -e ./slurm/slurm.%N.%j.err
 #SBATCH --chdir=/scratch.hpc/luca.serfilippi3/CR-PPO
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=luca.serfilippi@unibo.it
