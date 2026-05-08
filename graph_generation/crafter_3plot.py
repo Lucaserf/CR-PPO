@@ -20,10 +20,10 @@ def set_color_map(plt, palette: str = "colorblind") -> bool:
 set_color_map(plt, "colorblind")
 colors = sns.color_palette("colorblind")
 plt.rcParams.update({
-    "pgf.texsystem": "pdflatex",
-    "font.family": "serif", 
+    # "pgf.texsystem": "pdflatex",
+    # "font.family": "serif", 
     "font.serif": "Times",
-    "text.usetex": True,
+    # "text.usetex": True,
     "pgf.rcfonts": False,
     "font.size": 22,
     "figure.figsize": (21, 5)  # Wider to accommodate 3 subplots

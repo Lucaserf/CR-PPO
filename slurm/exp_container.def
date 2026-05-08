@@ -1,0 +1,13 @@
+Bootstrap: docker
+From: pytorch/pytorch:2.5.1-cuda12.4-cudnn9-runtime
+
+%post
+    pip install --break-system-packages --no-cache-dir stable_baselines3==2.3.2 gymnasium[atari,accept-rom-license]==0.29.1 opencv-python==4.10.0.84 crafter
+
+
+%runscript
+    exec python3 "$@"
+
+%labels
+    Author luca.serfilippi@unibo.it
+    Description Container for explainable distillation experiments
