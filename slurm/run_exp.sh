@@ -18,7 +18,7 @@ PYTHON_SCRIPT="main_gymnasium.py"
 export APPTAINER_CACHEDIR=/scratch.hpc/luca.serfilippi3
 
 WORKDIR=/scratch.hpc/luca.serfilippi3/CR-PPO
-SLURM_DIR=${WORKDIR}/slurm_files
+SLURM_DIR=${WORKDIR}/slurm
 CONTAINER_NAME="${SLURM_DIR}/exp_container.sif"
 
 # Load tokens from file
