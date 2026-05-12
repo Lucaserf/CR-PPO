@@ -35,13 +35,13 @@ fi
 
 echo "Running ${PYTHON_SCRIPT} (pretrained=False) inside container in parallel..."
 
-seeds=("0" "1" "2" "3" "4")
+seeds=("6" "7")
 entropy_values=("1e-1" "5e-2" "1e-2" "5e-3" "1e-3" "0")
 
 env="AsteroidsNoFrameskip-v4"
 policy="CnnPolicy"
 
-timesteps="5000000"
+timesteps="491520000"
 
 for seed in "${seeds[@]}"; do
     for entropy_value in "${entropy_values[@]}"; do
@@ -52,7 +52,9 @@ for seed in "${seeds[@]}"; do
         --timesteps $timesteps \
         --policy $policy \
         --only_entropy &
-
+    done
+    
+    for entropy_value in "${entropy_values[@]}"; do
         apptainer exec --nv --bind $WORKDIR:$WORKDIR $CONTAINER_NAME python3 ${PYTHON_SCRIPT} \
         --env $env \
         --seed $seed \
