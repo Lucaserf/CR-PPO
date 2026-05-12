@@ -42,13 +42,13 @@ COLOR_PALETTE = {
 # Configuration
 LOGS_FOLDER = "logs"
 ENVIRONMENT = "CrafterReward-v1"
-SEEDS_TO_PLOT = ["0", "1", "2"]
+SEEDS_TO_PLOT = ["0", "1", "2","3","4"]  # List of seeds to include in the plot
 ENTROPY_COEFFS_TO_PLOT = ["5e-2", "1e-2", "1e-3", "0", "1e-1", "5e-3"]
 ROLLING_WINDOW_SIZE = 50
 MAX_PLOT_POINTS = 5000
 
 # Entropy coefficients to average for comparison plot
-ENTROPY_COEFFS_TO_AVERAGE = ["1e-2", "1e-3", "5e-2", "1e-1", "5e-3"]
+ENTROPY_COEFFS_TO_AVERAGE =  ["1e-2", "1e-3", "5e-2", "1e-1", "5e-3"]
 
 
 def load_and_process_data(logs_folder, environment, plot_type, entropy_coefficient, seeds_to_plot, window_size, max_points=None):
@@ -250,8 +250,8 @@ def create_three_subplot_figure():
         if ax == ax1:
             ax.set_ylabel('Mean Episode Reward')
         ax.grid(True, linestyle='--', alpha=0.6)
-        ax.set_xlim(0, 1e6)
-        ax.set_xticks(np.arange(0, 1e6 + 1, 2e5))
+        ax.set_xlim(0, 5e6)
+        ax.set_xticks(np.arange(0, 5e6 + 1, 5e5))
         
         # Remove Y-axis labels for subplots 2 and 3
         if ax != ax1:
@@ -334,8 +334,8 @@ def create_three_subplot_figure():
     ax3.set_title("Comparison")
     ax3.set_xlabel('Timesteps')
     ax3.grid(True, linestyle='--', alpha=0.6)
-    ax3.set_xlim(0, 1e6)
-    ax3.set_xticks(np.arange(0, 1e6 + 1, 2e5))
+    ax3.set_xlim(0, 5e6)
+    ax3.set_xticks(np.arange(0, 5e6 + 1, 5e5))
     ax3.set_yticklabels([])  # Remove Y-axis labels
 
     # Create legends
