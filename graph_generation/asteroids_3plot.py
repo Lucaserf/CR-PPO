@@ -42,7 +42,7 @@ COLOR_PALETTE = {
 # Configuration
 LOGS_FOLDER = "logs"
 ENVIRONMENT = "AsteroidsNoFrameskip-v4"
-SEEDS_TO_PLOT = ["0","1","2"]#["3", "4", "5"]
+SEEDS_TO_PLOT = ["3", "4", "5","6", "7"]  
 ENTROPY_COEFFS_TO_PLOT = ["5e-2", "1e-2", "1e-3", "0", "1e-1", "5e-3"]
 ROLLING_WINDOW_SIZE = 5000
 MAX_PLOT_POINTS = 5000
