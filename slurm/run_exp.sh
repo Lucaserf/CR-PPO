@@ -2,7 +2,7 @@
 #SBATCH --job-name=CR-PPO
 #SBATCH --ntasks=1
 #SBATCH --nodes=1
-#SBATCH --cpus-per-task=32
+#SBATCH --cpus-per-task=64
 #SBATCH --mem=32G
 #SBATCH --partition=l40s
 #SBATCH --gres=gpu:1
@@ -35,13 +35,13 @@ fi
 
 echo "Running ${PYTHON_SCRIPT} (pretrained=False) inside container in parallel..."
 
-seeds=("3" "4")
-entropy_values=("1e-1" "5e-2" "1e-2" "5e-3" "1e-3" "0")
+seeds=("6" "7")
+entropy_values=("1e-1") # ("1e-1" "5e-2" "1e-2" "5e-3" "1e-3" "0")
 
-env="RiverraidNoFrameskip-v4"
+env="AsteroidsNoFrameskip-v4"
 policy="CnnPolicy"
 
-timesteps="71680000"
+timesteps="491520000"
 
 for seed in "${seeds[@]}"; do
     for entropy_value in "${entropy_values[@]}"; do
