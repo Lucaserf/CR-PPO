@@ -1,5 +1,4 @@
 torch==2.5.1
-stable_baselines3==2.3.2
-gymnasium[atari,accept-rom-license]==0.29.1
-tensorboard==2.17.0
+stable_baselines3
+gymnasium[atari,accept-rom-license]
 opencv-python==4.10.0.84

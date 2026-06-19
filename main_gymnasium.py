@@ -8,8 +8,25 @@ from stable_baselines3 import PPO
 from stable_baselines3.common.env_util import make_atari_env, make_vec_env
 from stable_baselines3.common.logger import configure
 from stable_baselines3.common.vec_env import VecFrameStack
-import crafter
+#import crafter
 
+
+import ale_py
+
+# 1. Tell gymnasium to discover and register all ale-py environments internally
+gym.register_envs(ale_py)
+
+# 2. Manually map your exact string to the newly registered official environment
+gym.register(
+    id="AsteroidsNoFrameskip-v4",
+    entry_point="ale_py.env:AtariEnv",  # Modern entry point
+    kwargs={
+        "game": "asteroids", 
+        "obs_type": "rgb", 
+        "frameskip": 1, 
+        "repeat_action_probability": 0.0
+    },
+)
 class CrafterGymnasiumEnv(gym.Env):
     def __init__(self, reward=True, seed=None):
         self.reward = reward
