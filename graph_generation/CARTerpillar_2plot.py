@@ -40,7 +40,7 @@ COLOR_PALETTE = {
 }
 
 # Configuration
-LOGS_FOLDER = "logs"
+LOGS_FOLDER = "D:\\CR-PPO\\logs"
 ENVIRONMENTS = [
     "ComplexCartPoleEnv9.81_6",
     "ComplexCartPoleEnv9.81_7",

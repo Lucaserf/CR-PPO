@@ -40,7 +40,7 @@ COLOR_PALETTE = {
 }
 
 # Configuration
-LOGS_FOLDER = "logs"
+LOGS_FOLDER = "D:\\CR-PPO\\logs"
 ENVIRONMENT = "AirRaidNoFrameskip-v4"
 SEEDS_TO_PLOT = ["9", "10", "11", "6", "7", "8", "0", "1", "2"]
 ENTROPY_COEFFS_TO_PLOT = ["5e-2", "1e-2", "1e-3", "0", "1e-1", "5e-3"]

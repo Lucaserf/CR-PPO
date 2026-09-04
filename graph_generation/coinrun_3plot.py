@@ -40,7 +40,7 @@ COLOR_PALETTE = {
 }
 
 # Configuration
-LOGS_FOLDER = "logs"
+LOGS_FOLDER = "D:\\CR-PPO\\logs"
 ENVIRONMENT = "coinrun"
 SEEDS_TO_PLOT = ["0", "1", "2", "3", "4"]
 ENTROPY_COEFFS_TO_PLOT = ["5e-2", "1e-2", "1e-3", "0", "1e-1", "5e-3"]

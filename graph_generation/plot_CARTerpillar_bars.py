@@ -36,7 +36,7 @@ plt.rcParams["figure.figsize"] = (8,5)
 colors = sns.color_palette("colorblind")
 
 # --- Configuration ---
-logs_folder = "logs"
+logs_folder = "D:\\CR-PPO\\logs"
 
 environments = ["ComplexCartPoleEnv9.81_6","ComplexCartPoleEnv9.81_7","ComplexCartPoleEnv9.81_8", "ComplexCartPoleEnv9.81_9", "ComplexCartPoleEnv9.81_10", "ComplexCartPoleEnv9.81_11"]
 SEEDS_TO_PLOT = ["0","1","2"]

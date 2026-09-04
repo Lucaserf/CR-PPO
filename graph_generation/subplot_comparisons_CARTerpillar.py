@@ -5,7 +5,7 @@ import numpy as np
 import seaborn as sns
 
 # --- Configuration ---
-logs_folder = "logs"
+logs_folder = "D:\\CR-PPO\\logs"
 
 environments = [
     "CARTerpillar9.81_6",

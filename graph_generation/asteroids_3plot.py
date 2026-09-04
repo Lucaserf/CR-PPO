@@ -20,10 +20,10 @@ def set_color_map(plt, palette: str = "colorblind") -> bool:
 set_color_map(plt, "colorblind")
 colors = sns.color_palette("colorblind")
 plt.rcParams.update({
-    # "pgf.texsystem": "pdflatex",
-    # "font.family": "serif", 
+    "pgf.texsystem": "pdflatex",
+    "font.family": "serif", 
     "font.serif": "Times",
-    # "text.usetex": True,
+    "text.usetex": True,
     "pgf.rcfonts": False,
     "font.size": 22,
     "figure.figsize": (21, 5)  # Wider to accommodate 3 subplots
@@ -40,7 +40,7 @@ COLOR_PALETTE = {
 }
 
 # Configuration
-LOGS_FOLDER = "logs"
+LOGS_FOLDER = "D:\\CR-PPO\\logs"
 ENVIRONMENT = "AsteroidsNoFrameskip-v4"
 SEEDS_TO_PLOT = ["3", "4", "5","6", "7"]  
 ENTROPY_COEFFS_TO_PLOT = ["5e-2", "1e-2", "1e-3", "0", "1e-1", "5e-3"]
@@ -250,9 +250,9 @@ def create_three_subplot_figure():
         if ax == ax1:
             ax.set_ylabel('Mean Episode Reward')
         ax.grid(True, linestyle='--', alpha=0.6)
-        ax.set_xlim(0, 480000*1024)
-        ax.set_ylim(0, 200000)
-        ax.set_xticks(np.arange(0, 480001*1024, 1e8))
+        # ax.set_xlim(0, 480000*1024)
+        # ax.set_ylim(0, 200000)
+        # ax.set_xticks(np.arange(0, 480001*1024, 1e8))
         
         # Remove Y-axis labels for subplots 2 and 3
         if ax != ax1:
@@ -335,9 +335,9 @@ def create_three_subplot_figure():
     ax3.set_title("Comparison")
     ax3.set_xlabel('Timesteps')
     ax3.grid(True, linestyle='--', alpha=0.6)
-    ax3.set_xlim(0, 480000*1024)
-    ax3.set_ylim(0, 200000)
-    ax3.set_xticks(np.arange(0, 480001*1024, 1e8))
+    # ax3.set_xlim(0, 480000*1024)
+    # ax3.set_ylim(0, 200000)
+    # ax3.set_xticks(np.arange(0, 480001*1024, 1e8))
     ax3.set_yticklabels([])  # Remove Y-axis labels
 
     # Create legends
