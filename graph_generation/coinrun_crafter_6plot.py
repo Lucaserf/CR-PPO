@@ -47,31 +47,31 @@ MAX_PLOT_POINTS = 5000
 
 # Environment-specific configurations
 ENV_CONFIGS = {
-    "asteroids": {
-        "environment": "AsteroidsNoFrameskip-v4",
-        "seeds": ["3", "4", "5","6","7"],
-        "rolling_window": 10000,
-        "timestep_multiplier": 1024,
-        "xlim": (0, 240000 * 1024),
-        "ylim": (0, 500000),
-        "xticks": np.arange(0, 240001 * 1024, 5e7),
-        "progress_file": "progress.csv",
-        "reward_column": "rollout/ep_rew_mean",
-        "row_label": "AsteroidsNoFrameskip-v4",
-        "title": "Asteroids",
+    "coinrun": {
+        "environment": "coinrun",
+        "seeds": ["0", "1", "2", "3", "4"],
+        "rolling_window": 50,
+        "timestep_multiplier": 65536,
+        "xlim": (0, 700 * 65536),
+        "ylim": (3, 8),
+        "xticks": np.arange(0, 700 * 65536, 1e7),
+        "progress_file": "progress-rank001.csv",
+        "reward_column": "eprewmean",
+        "row_label": "coinrun",
+        "title": "CoinRun",
     },
-    "riverraid": {
-        "environment": "RiverraidNoFrameskip-v4",
-        "seeds": ["0", "1", "2","3","4"],
-        "rolling_window": 1000,
+    "crafter": {
+        "environment": "CrafterReward-v1",
+        "seeds": ["0", "1", "2", "3", "4"],
+        "rolling_window": 50,
         "timestep_multiplier": 1024,
-        "xlim": (0, 70000 * 1024),
-        "ylim": (0, 17000),
-        "xticks": np.arange(0, 70001 * 1024, 1e7),
+        "xlim": (0, 5e6),
+        "ylim": (0, 11),
+        "xticks": np.arange(0, 5e6 + 1, 1e6),
         "progress_file": "progress.csv",
         "reward_column": "rollout/ep_rew_mean",
-        "row_label": "RiverraidNoFrameskip-v4",
-        "title": "RiverRaid",
+        "row_label": "CrafterReward-v1",
+        "title": "Crafter",
     },
 }
 
@@ -384,17 +384,17 @@ def plot_row(fig, axes, env_key, config, is_top_row):
 
 
 def create_six_subplot_figure():
-    """Create a 2x3 subplot figure combining Asteroids (top) and Riverraid (bottom)."""
+    """Create a 2x3 subplot figure combining Coinrun (top) and Crafter (bottom)."""
     fig, axes = plt.subplots(2, 3)
 
-    # Row 1: Asteroids
+    # Row 1: Coinrun
     all_lines_top, all_labels_top, comp_lines_top, comp_labels_top = plot_row(
-        fig, axes[0], "asteroids", ENV_CONFIGS["asteroids"], is_top_row=True
+        fig, axes[0], "coinrun", ENV_CONFIGS["coinrun"], is_top_row=True
     )
 
-    # Row 2: Riverraid
+    # Row 2: Crafter
     all_lines_bot, all_labels_bot, comp_lines_bot, comp_labels_bot = plot_row(
-        fig, axes[1], "riverraid", ENV_CONFIGS["riverraid"], is_top_row=False
+        fig, axes[1], "crafter", ENV_CONFIGS["crafter"], is_top_row=False
     )
 
     # Use the lines from whichever row has data for the shared legend
@@ -422,7 +422,7 @@ def create_six_subplot_figure():
     plt.tight_layout()
 
     # Save figure
-    plot_filename = "figures/six_subplot_asteroids_riverraid.pdf"
+    plot_filename = "figures/six_subplot_coinrun_crafter.pdf"
     plt.savefig(plot_filename, bbox_inches='tight')
     print(f"Six subplot plot saved to {plot_filename}")
 

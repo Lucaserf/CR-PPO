@@ -17,7 +17,7 @@ environments = [
 ]
 
 # Seeds and entropy coefficients to include in the plot
-SEEDS_TO_PLOT = ["0","1","2"]
+SEEDS_TO_PLOT = ["0","1","2","3","4"]
 ENTROPY_COEFFS_TO_AVERAGE = ["1e-2","3e-2", "1e-3","3e-3","1e-1"]
 
 # --- Smoothing Configuration ---
@@ -35,14 +35,26 @@ plt.rcParams.update({
 
 
 
+def is_env_match(file_dir, env_name):
+    """
+    Checks if a directory matches the environment, supporting both naming schemes:
+    'ComplexCartPoleEnv9.81_{cart_count}_...' and 'CARTerpillar9.8_{cart_count}_...'
+    """
+    parts = file_dir.split("_")
+    if len(parts) < 5:
+        return False
+    cart_count = env_name.split("_")[-1]
+    return parts[1] == cart_count and (parts[0].startswith("ComplexCartPoleEnv") or parts[0].startswith("CARTerpillar"))
+
 # --- Helper function to get the mean run for a specific (coeff, type) across seeds ---
 def get_mean_run_for_coeff_type(all_files, target_entropy_coeff, target_plot_type,
                                 env_name, seeds_filter, window_size):
     """
     Loads, smooths, and averages runs across seeds for a specific entropy_coeff and plot_type.
-    Returns: (mean_rewards_over_seeds, common_length, num_seed_runs) or (None, 0, 0).
+    Returns: (mean_rewards_over_seeds, common_length, num_seed_runs, seeds_found) or (None, 0, 0, []).
     """
     df_list_smoothed = []
+    seeds_found = []
 
     for file_dir in all_files:
         try:
@@ -53,7 +65,7 @@ def get_mean_run_for_coeff_type(all_files, target_entropy_coeff, target_plot_typ
         except IndexError:
             continue
 
-        if (env_name not in file_dir or
+        if (not is_env_match(file_dir, env_name) or
             seed not in seeds_filter or
             entropy_coeff_from_file != target_entropy_coeff or
             type_experiment_from_file != target_plot_type):
@@ -71,22 +83,24 @@ def get_mean_run_for_coeff_type(all_files, target_entropy_coeff, target_plot_typ
             rewards = df['rollout/ep_rew_mean']
             smoothed_rewards = rewards.rolling(window=window_size, min_periods=1).mean()
             df_list_smoothed.append(smoothed_rewards)
+            seeds_found.append(seed)
         except Exception:
             continue # Skip faulty files
 
     if not df_list_smoothed:
-        return None, 0, 0
+        return None, 0, 0, []
 
     min_len = min([len(s) for s in df_list_smoothed])
     aligned_dfs = [s[:min_len] for s in df_list_smoothed]
 
     if not aligned_dfs:
-        return None, 0, 0
+        return None, 0, 0, []
 
     data_array = np.array(aligned_dfs)
     mean_rewards_over_seeds = np.mean(data_array, axis=0) # Mean across seeds
+    sorted_seeds = sorted(seeds_found, key=lambda s: int(s) if s.isdigit() else s)
 
-    return mean_rewards_over_seeds, min_len, len(aligned_dfs)
+    return mean_rewards_over_seeds, min_len, len(aligned_dfs), sorted_seeds
 
 # --- Script Start ---
 
@@ -135,7 +149,7 @@ for env_idx, environment in enumerate(environments):
     ax = axes[env_idx]
     
     # Filter directories for this environment
-    env_log_dirs = [d for d in all_log_dirs if environment in d and os.path.isdir(os.path.join(logs_folder, d))]
+    env_log_dirs = [d for d in all_log_dirs if is_env_match(d, environment) and os.path.isdir(os.path.join(logs_folder, d))]
     
     if not env_log_dirs:
         print(f"No log directories found for environment '{environment}' in '{logs_folder}'. Skipping.")
@@ -152,7 +166,7 @@ for env_idx, environment in enumerate(environments):
 
         # For the current plot_type, get the mean run for each specified entropy coefficient
         for entropy_coeff in ENTROPY_COEFFS_TO_AVERAGE:
-            mean_rewards_for_this_coeff, length, num_seed_runs = get_mean_run_for_coeff_type(
+            mean_rewards_for_this_coeff, length, num_seed_runs, seeds_found = get_mean_run_for_coeff_type(
                 env_log_dirs, entropy_coeff, plot_type_to_aggregate,
                 environment, SEEDS_TO_PLOT, ROLLING_WINDOW_SIZE
             )
@@ -161,7 +175,7 @@ for env_idx, environment in enumerate(environments):
                 mean_curves_per_coeff.append(mean_rewards_for_this_coeff)
                 lengths_per_coeff.append(length)
                 num_coeffs_with_data +=1
-                print(f"  Got data for {plot_type_to_aggregate}, coeff {entropy_coeff} (avg over {num_seed_runs} seeds, len {length})")
+                print(f"  Got data for {plot_type_to_aggregate}, coeff {entropy_coeff} (seeds found {seeds_found}, avg over {num_seed_runs} seeds, len {length})")
             else:
                 print(f"  No data or insufficient seed runs for {plot_type_to_aggregate}, coeff {entropy_coeff}")
 

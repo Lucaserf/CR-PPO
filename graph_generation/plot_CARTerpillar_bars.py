@@ -39,18 +39,30 @@ colors = sns.color_palette("colorblind")
 logs_folder = "D:\\CR-PPO\\logs"
 
 environments = ["ComplexCartPoleEnv9.81_6","ComplexCartPoleEnv9.81_7","ComplexCartPoleEnv9.81_8", "ComplexCartPoleEnv9.81_9", "ComplexCartPoleEnv9.81_10", "ComplexCartPoleEnv9.81_11"]
-SEEDS_TO_PLOT = ["0","1","2"]
+SEEDS_TO_PLOT = ["0","1","2","3","4"]
 ENTROPY_COEFFS_TO_AVERAGE = ["1e-2","3e-2", "1e-3","3e-3","1e-1"]
 ROLLING_WINDOW_SIZE = 500
+
+def is_env_match(file_dir, env_name):
+    """
+    Checks if a directory matches the environment, supporting both naming schemes:
+    'ComplexCartPoleEnv9.81_{cart_count}_...' and 'CARTerpillar9.8_{cart_count}_...'
+    """
+    parts = file_dir.split("_")
+    if len(parts) < 5:
+        return False
+    cart_count = env_name.split("_")[-1]
+    return parts[1] == cart_count and (parts[0].startswith("ComplexCartPoleEnv") or parts[0].startswith("CARTerpillar"))
 
 # --- Helper function to get final performance statistics ---
 def get_final_performance_stats(all_files, target_entropy_coeff, target_plot_type,
                                env_name, seeds_filter, window_size, final_fraction=0.1):
     """
     Get final performance statistics (mean of last 10% of episodes) for a specific configuration.
-    Returns: (final_mean, final_std, final_sem, num_runs) or (None, None, None, 0)
+    Returns: (final_mean, final_std, final_sem, num_runs, seeds_found) or (None, None, None, 0, [])
     """
     final_values = []
+    seeds_found = []
 
     for file_dir in all_files:
         try:
@@ -61,7 +73,7 @@ def get_final_performance_stats(all_files, target_entropy_coeff, target_plot_typ
         except IndexError:
             continue
 
-        if (env_name not in file_dir or
+        if (not is_env_match(file_dir, env_name) or
             seed not in seeds_filter or
             entropy_coeff_from_file != target_entropy_coeff or
             type_experiment_from_file != target_plot_type):
@@ -83,19 +95,21 @@ def get_final_performance_stats(all_files, target_entropy_coeff, target_plot_typ
             final_portion_size = max(1, int(len(smoothed_rewards) * final_fraction))
             final_mean_reward = smoothed_rewards[-final_portion_size:].mean()
             final_values.append(final_mean_reward)
+            seeds_found.append(seed)
             
         except Exception:
             continue
 
     if not final_values:
-        return None, None, None, 0
+        return None, None, None, 0, []
 
     final_values = np.array(final_values)
     mean_val = np.mean(final_values)
     std_val = np.std(final_values)
     sem_val = std_val / np.sqrt(len(final_values))
     
-    return mean_val, std_val, sem_val, len(final_values)
+    sorted_seeds = sorted(seeds_found, key=lambda s: int(s) if s.isdigit() else s)
+    return mean_val, std_val, sem_val, len(final_values), sorted_seeds
 
 # --- Get aggregated performance for complexity and entropy coefficients ---
 def get_aggregated_performance_stats(all_files, entropy_coeffs_list, target_plot_type,
@@ -106,13 +120,16 @@ def get_aggregated_performance_stats(all_files, entropy_coeffs_list, target_plot
     all_final_means = []
     
     for entropy_coeff in entropy_coeffs_list:
-        final_mean, _, _, num_runs = get_final_performance_stats(
+        final_mean, _, _, num_runs, seeds_found = get_final_performance_stats(
             all_files, entropy_coeff, target_plot_type,
             env_name, seeds_filter, window_size, final_fraction
         )
         
         if final_mean is not None and num_runs > 0:
             all_final_means.append(final_mean)
+            print(f"    {target_plot_type}, coeff {entropy_coeff}: seeds found {seeds_found} (count: {num_runs})")
+        else:
+            print(f"    {target_plot_type}, coeff {entropy_coeff}: no data found")
     
     if not all_final_means:
         return None, None, None, 0
@@ -143,8 +160,8 @@ for env in environments:
 for environment in environments:
     print(f"\nProcessing environment: {environment}")
     
-    # Filter log directories for this environment
-    env_log_dirs = [d for d in all_log_dirs if environment in d and os.path.isdir(os.path.join(logs_folder, d))]
+    # Filter log directories for this environment supporting both naming schemes
+    env_log_dirs = [d for d in all_log_dirs if is_env_match(d, environment) and os.path.isdir(os.path.join(logs_folder, d))]
     
     if not env_log_dirs:
         print(f"No log directories found for environment '{environment}'.")
@@ -153,19 +170,29 @@ for environment in environments:
         results[environment]["Mean complexity coeffs"] = None
         results[environment]["Mean entropy coeffs"] = None
         continue
+
+    # Identify matching seeds available in log folder
+    available_seeds = sorted(list(set(
+        d.split("_")[2] for d in env_log_dirs 
+        if len(d.split("_")) >= 3 and d.split("_")[2] in SEEDS_TO_PLOT
+    )), key=lambda s: int(s) if s.isdigit() else s)
+    print(f"  Matching seeds in log dirs: {available_seeds}")
     
     # --- Get statistics for coefficient 0 baseline (use complexity data) ---
-    baseline_mean, baseline_std, baseline_sem, baseline_runs = get_final_performance_stats(
+    baseline_mean, baseline_std, baseline_sem, baseline_runs, baseline_seeds = get_final_performance_stats(
         env_log_dirs, "0", "complexity", environment, SEEDS_TO_PLOT, ROLLING_WINDOW_SIZE
     )
     
     if baseline_mean is not None:
         results[environment]["Baseline"] = f"{baseline_mean:.2f} ± {baseline_sem:.2f}"
+        print(f"  Baseline (coeff 0): seeds found {baseline_seeds} (count: {baseline_runs})")
     else:
         results[environment]["Baseline"] = "N/A"
+        print(f"  Baseline (coeff 0): no data found")
     
     # --- Get aggregated statistics for complexity and entropy mean coefficients ---
     for plot_type in ["complexity", "entropy"]:
+        print(f"  Processing {plot_type}:")
         agg_mean, agg_std, agg_sem, agg_n = get_aggregated_performance_stats(
             env_log_dirs, ENTROPY_COEFFS_TO_AVERAGE, plot_type,
             environment, SEEDS_TO_PLOT, ROLLING_WINDOW_SIZE
@@ -248,7 +275,7 @@ plot_data = {'environments': [], 'baseline': [], 'baseline_sem': [],
              'complexity': [], 'complexity_sem': [], 'entropy': [], 'entropy_sem': []}
 
 for env in environments:
-    plot_data['environments'].append(env.replace('ComplexCartPoleEnv9.81_', ''))
+    plot_data['environments'].append(env.split('_')[-1])
     
     # Parse baseline values
     baseline_str = results[env]["Baseline"]

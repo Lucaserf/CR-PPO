@@ -50,13 +50,25 @@ ENVIRONMENTS = [
     "ComplexCartPoleEnv9.81_11",
 ]
 
-SEEDS_TO_PLOT = ["0", "1", "2"]
+SEEDS_TO_PLOT = ["0", "1", "2", "3", "4"]
 ENTROPY_COEFFS_TO_PLOT = ["1e-2", "3e-2", "1e-3", "3e-3", "1e-1", "0"]
 ROLLING_WINDOW_SIZE = 500
 MAX_PLOT_POINTS = 5000
 
 # X-axis multiplier (each timestep corresponds to 256 environment steps)
 X_MULTIPLIER = 256
+
+
+def is_env_match(file_dir, env_name):
+    """
+    Checks if a directory matches the environment, supporting both naming schemes:
+    'ComplexCartPoleEnv9.81_{cart_count}_...' and 'CARTerpillar9.8_{cart_count}_...'
+    """
+    parts = file_dir.split("_")
+    if len(parts) < 5:
+        return False
+    cart_count = env_name.split("_")[-1]
+    return parts[1] == cart_count and (parts[0].startswith("ComplexCartPoleEnv") or parts[0].startswith("CARTerpillar"))
 
 
 def load_and_process_data(logs_folder, environment, plot_type, entropy_coefficient,
@@ -69,9 +81,10 @@ def load_and_process_data(logs_folder, environment, plot_type, entropy_coefficie
         seed -> parts[2], entropy_coeff -> parts[3], type -> parts[4]
     """
     files = [f for f in os.listdir(logs_folder)
-             if environment in f and os.path.isdir(os.path.join(logs_folder, f))]
+             if is_env_match(f, environment) and os.path.isdir(os.path.join(logs_folder, f))]
 
     df_list_smoothed = []
+    seeds_found = []
 
     for file in files:
         try:
@@ -82,7 +95,8 @@ def load_and_process_data(logs_folder, environment, plot_type, entropy_coefficie
         except IndexError:
             continue
 
-        if (entropy_coeff != entropy_coefficient or
+        if (not is_env_match(file, environment) or
+                entropy_coeff != entropy_coefficient or
                 type_experiment != plot_type or
                 seed not in seeds_to_plot):
             continue
@@ -93,18 +107,19 @@ def load_and_process_data(logs_folder, environment, plot_type, entropy_coefficie
 
         try:
             df = pd.read_csv(file_path)
-            if 'rollout/ep_rew_mean' not in df.columns:
+            if 'rollout/ep_rew_mean' not in df.columns or df.empty:
                 continue
 
             rewards = df['rollout/ep_rew_mean']
             smoothed_rewards = rewards.rolling(window=window_size, min_periods=1).mean()
             df_list_smoothed.append(smoothed_rewards)
+            seeds_found.append(seed)
 
         except Exception:
             continue
 
     if not df_list_smoothed:
-        return None, None, None
+        return None, None, None, []
 
     # Align lengths
     min_len = min(len(df) for df in df_list_smoothed)
@@ -127,7 +142,8 @@ def load_and_process_data(logs_folder, environment, plot_type, entropy_coefficie
             mean_smoothed = mean_smoothed[indices]
             sem_smoothed = sem_smoothed[indices]
 
-    return x_values, mean_smoothed, sem_smoothed
+    sorted_seeds = sorted(seeds_found, key=lambda s: int(s) if s.isdigit() else s)
+    return x_values, mean_smoothed, sem_smoothed, sorted_seeds
 
 
 def create_two_subplot_figure(environment):
@@ -141,12 +157,18 @@ def create_two_subplot_figure(environment):
         print(f"Error: Logs folder '{LOGS_FOLDER}' not found.")
         return
 
-    # Filter relevant files for this environment
-    files = [f for f in files if environment in f and os.path.isdir(os.path.join(LOGS_FOLDER, f))]
+    # Filter relevant files for this environment supporting both naming schemes
+    files = [f for f in files if is_env_match(f, environment) and os.path.isdir(os.path.join(LOGS_FOLDER, f))]
 
     if not files:
         print(f"No log directories found for environment '{environment}' in '{LOGS_FOLDER}'.")
         return
+
+    available_seeds = sorted(list(set(
+        d.split("_")[2] for d in files 
+        if len(d.split("_")) >= 3 and d.split("_")[2] in SEEDS_TO_PLOT
+    )), key=lambda s: int(s) if s.isdigit() else s)
+    print(f"  Matching seeds in log dirs: {available_seeds}")
 
     # Two plots: individual entropy coefficients for CR-PPO and PPOwEnt
     plot_configs = [
@@ -190,12 +212,13 @@ def create_two_subplot_figure(environment):
 
         # Plot each entropy coefficient
         for entropy_coeff in available_coeffs:
-            x_vals, mean_vals, sem_vals = load_and_process_data(
+            x_vals, mean_vals, sem_vals, seeds_found = load_and_process_data(
                 LOGS_FOLDER, environment, plot_type, entropy_coeff,
                 SEEDS_TO_PLOT, ROLLING_WINDOW_SIZE, MAX_PLOT_POINTS
             )
 
             if x_vals is not None:
+                print(f"    {plot_type}, coeff {entropy_coeff}: seeds found {seeds_found} (count: {len(seeds_found)})")
                 color = COLOR_PALETTE.get(entropy_coeff, colors[0])
                 x_vals = x_vals * X_MULTIPLIER
 
